@@ -2398,39 +2398,48 @@
       }
 
       async function loadMyReviews() {
-        const loading = document.getElementById("myReviewsLoading");
-        const myReviewsList = document.getElementById("myReviewsList");
+  const loading = document.getElementById("myReviewsLoading");
+  const myReviewsList = document.getElementById("myReviewsList");
 
-        loading.style.display = "block";
-        myReviewsList.innerHTML = ""; // Clear previous reviews
+  if (!loading || !myReviewsList) {
+    console.error("Missing DOM elements");
+    return;
+  }
 
-        try {
-          const response = await fetch(`${API_BASE_URL}v1/reviews/my-reviews`, {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          });
-          const result = await response.json();
+  loading.style.display = "block";
+  myReviewsList.innerHTML = "";
 
-          if (response.ok) {
-            const reviews = Array.isArray(result.reviews)
-              ? result.reviews
-              : [];
-            displayMyReviews(reviews, myReviewsList);
-          } else {
-            showAlert("error", "Failed to load your reviews");
-            myReviewsList.innerHTML =
-              '<div class="empty-cart"><i class="fas fa-star-half-alt"></i><h3>Failed to load your reviews</h3></div>';
-          }
-        } catch (error) {
-          showAlert("error", "Network error while loading your reviews");
-          console.error("Error loading my reviews:", error);
-          myReviewsList.innerHTML =
-            '<div class="empty-cart"><i class="fas fa-star-half-alt"></i><h3>Network error</h3></div>';
-        } finally {
-          loading.style.display = "none";
-        }
-      }
+  try {
+    const response = await fetch(`${API_BASE_URL}v1/reviews/my-reviews`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    const result = await response.json();
+    console.log("Review API Result:", result);
+
+    const reviews = Array.isArray(result.reviews)
+      ? result.reviews
+      : Array.isArray(result) ? result : [];
+
+    if (response.ok) {
+      displayMyReviews(reviews, myReviewsList);
+    } else {
+      showAlert("error", "Failed to load your reviews");
+      myReviewsList.innerHTML =
+        '<div class="empty-cart"><i class="fas fa-star-half-alt"></i><h3>Failed to load your reviews</h3></div>';
+    }
+  } catch (error) {
+    showAlert("error", "Network error while loading your reviews");
+    console.error("Error loading my reviews:", error);
+    myReviewsList.innerHTML =
+      '<div class="empty-cart"><i class="fas fa-star-half-alt"></i><h3>Network error</h3></div>';
+  } finally {
+    loading.style.display = "none";
+  }
+}
+
 
       function displayMyReviews(reviews, container) {
         if (!reviews || reviews.length === 0) {
