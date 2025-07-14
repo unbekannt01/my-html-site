@@ -1402,17 +1402,14 @@
 
         loading.style.display = "block";
 
-        try {
-          const response = await fetch(`${API_BASE_URL}v1/products/getAll`);
-const contentType = response.headers.get("content-type");
-
-if (contentType && contentType.includes("application/json")) {
-  const data = await response.json();
-  console.log("Products:", data);
-} else {
-  const html = await response.text();
-  console.error("Expected JSON but got HTML:", html);
-}
+       try {
+const response = await );
+const result = await response.json();
+if (response.ok) {
+products = Array.isArray(resuIt) ? result :
+displayProducts (products) ;
+result.data I I [J;
+"Failed to load products");
         } catch (error) {
           showAlert("error", "Network error while loading products");
           console.error("Error loading products:", error);
